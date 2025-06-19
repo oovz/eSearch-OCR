@@ -6,7 +6,9 @@ export default defineConfig({
     build: {
         lib: {
             entry: resolve(__dirname, "src/main.ts"),
-            name: "esearch-ocr",
+            name: "eSearchOCR",
+            formats: ['es', 'umd', 'iife'],
+            fileName: (format) => `eSearchOCR.${format}.js`,
         },
     },
 });
