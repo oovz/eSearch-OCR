@@ -7,7 +7,7 @@ export function newCanvas(width: number, height: number) {
     return canvas(width, height);
 }
 
-export function setCanvas(x) {
+export function setCanvas(x: (width: number, height: number) => any) {
     canvas = x;
 }
 

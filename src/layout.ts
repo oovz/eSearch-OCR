@@ -15,9 +15,8 @@ async function layout(img: ImageData, ort: ortType, session: SessionType, dic: s
 async function runS(transposedData: number[][][], image: ImageData, ort: ortType, layout: SessionType) {
     const x = transposedData.flat(Number.POSITIVE_INFINITY) as number[];
     const detData = Float32Array.from(x);
-
     const detTensor = new ort.Tensor("float32", detData, [1, 3, image.height, image.width]);
-    const detFeed = {};
+    const detFeed: Record<string, any> = {};
     detFeed[layout.inputNames[0]] = detTensor;
 
     const detResults = await layout.run(detFeed);
@@ -55,7 +54,7 @@ function afterS(data: AsyncType<ReturnType<typeof runS>>, w: number, h: number, 
         scores.push(data[i]);
         boxes.push(data[i + n]);
     }
-    const reg_max = int(boxes[0].dims.at(-1) / 4 - 1);
+    const reg_max = int((boxes[0] as any).dims.at(-1)! / 4 - 1);
     let out_boxes_num: number[] = [];
     const out_boxes_list: number[][][] = [];
     const results: { bbox: number[]; label: string }[] = [];
@@ -87,11 +86,11 @@ function afterS(data: AsyncType<ReturnType<typeof runS>>, w: number, h: number, 
 
         // box distribution to distance
         const reg_max1 = reg_max + 1;
-        const shape0 = box_distribute.size / reg_max1;
+        const shape0 = (box_distribute as any).size / reg_max1;
 
         const box_distance_softmax: number[][] = []; // shape:shape0, reg_max1
         for (let i = 0; i < shape0; i++) {
-            const reshape0 = box_distribute.data.slice(i * reg_max1, (i + 1) * reg_max1); // reshape，这是size/regmax1
+            const reshape0 = (box_distribute as any).data.slice(i * reg_max1, (i + 1) * reg_max1); // reshape，这是size/regmax1
             const box_distance_axis_softmax = softmax(Array.from(reshape0 as Float32Array)); // softmax
             for (let j = 0; j < reg_max1; j++) {
                 box_distance_axis_softmax[j] *= j;
@@ -108,14 +107,12 @@ function afterS(data: AsyncType<ReturnType<typeof runS>>, w: number, h: number, 
             }
             x *= stride;
             box_distance_1_sum.push(x);
-        }
-
-        // top K candidate
+        }        // top K candidate
         const topKMap: [number, number][] = []; // [index,v]
-        const scoreShape0 = score.dims[1];
-        const scoreShape1 = score.dims[2];
+        const scoreShape0 = (score as any).dims[1];
+        const scoreShape1 = (score as any).dims[2];
         for (let i = 0; i < scoreShape0; i++) {
-            const slice = score.data.slice(i * scoreShape1, (i + 1) * scoreShape1) as Float32Array;
+            const slice = (score as any).data.slice(i * scoreShape1, (i + 1) * scoreShape1) as Float32Array;
             topKMap.push([i, Math.max(...(Array.from(slice) as number[]))]);
         }
         topKMap.sort((a, b) => b[1] - a[1]);
@@ -128,7 +125,7 @@ function afterS(data: AsyncType<ReturnType<typeof runS>>, w: number, h: number, 
         }
 
         for (let i = 0; i < Math.min(scoreShape0, nms_top_k); i++) {
-            const slice = score.data.slice(
+            const slice = (score as any).data.slice(
                 topKMap[i][0] * scoreShape1,
                 (topKMap[i][0] + 1) * scoreShape1,
             ) as Float32Array;
@@ -285,7 +282,7 @@ function hard_nms(box_scores: number[][], iou_threshold: number, top_k = -1, can
         .slice(0, candidate_size)
         .reverse();
     while (indexes.length > 0) {
-        const current: number = indexes.at(-1);
+        const current: number = indexes.at(-1)!;
         picked.push(current);
         if ((top_k > 0 && picked.length === top_k) || indexes.length === 1) {
             break;

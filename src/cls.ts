@@ -25,7 +25,7 @@ async function runS(transposedData: number[][][], image: ImageData, ort: ortType
     const detData = Float32Array.from(x);
 
     const detTensor = new ort.Tensor("float32", detData, [1, 3, image.height, image.width]);
-    const detFeed = {};
+    const detFeed: Record<string, any> = {};
     detFeed[layout.inputNames[0]] = detTensor;
 
     const detResults = await layout.run(detFeed);

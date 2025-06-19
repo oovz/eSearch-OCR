@@ -77,7 +77,7 @@ type InitOcrGlobal = {
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     canvas?: (w: number, h: number) => any;
     /** @deprecated use setOCREnv instead */
-    imageData?;
+    imageData?: any;
 };
 
 type loadImgType = string | HTMLImageElement | HTMLCanvasElement | ImageData;
@@ -223,7 +223,7 @@ function setOCREnv(op: {
     log?: boolean;
     // biome-ignore lint/suspicious/noExplicitAny: <explanation>
     canvas?: (w: number, h: number) => any;
-    imageData?;
+    imageData?: any;
 }) {
     dev = Boolean(op.dev);
     canlog = dev || Boolean(op.log);
@@ -331,13 +331,17 @@ async function initOCR(op: InitOcrBase) {
 
 function initOrtModel(
     ort: OrtOption["ort"],
-    input: string | ArrayBufferLike | Uint32Array,
+    input: string | ArrayBufferLike | Uint8Array,
     ortOptions?: OrtOption["ortOption"],
 ) {
     if (typeof input === "string") {
         return ort.InferenceSession.create(input, ortOptions);
     }
-    return ort.InferenceSession.create(input, ortOptions);
+    // Convert ArrayBufferLike to Uint8Array if needed
+    if (input instanceof ArrayBuffer || input instanceof SharedArrayBuffer) {
+        return ort.InferenceSession.create(new Uint8Array(input), ortOptions);
+    }
+    return ort.InferenceSession.create(input as Uint8Array, ortOptions);
 }
 
 async function initDocDirCls(op: InitDocClsBase & OrtOption) {
@@ -429,7 +433,7 @@ async function runDet(transposedData: number[][][], image: ImageData, det: Sessi
     const detData = Float32Array.from(transposedData.flat(3));
 
     const detTensor = new ort.Tensor("float32", detData, [1, 3, image.height, image.width]);
-    const detFeed = {};
+    const detFeed: Record<string, any> = {};
     detFeed[det.inputNames[0]] = detTensor;
 
     const detResults = await det.run(detFeed);
@@ -440,7 +444,7 @@ async function runRec(b: number[][][], imgH: number, imgW: number, rec: SessionT
     const recData = Float32Array.from(b.flat(3));
 
     const recTensor = new ort.Tensor("float32", recData, [1, 3, imgH, imgW]);
-    const recFeed = {};
+    const recFeed: Record<string, any> = {};
     recFeed[rec.inputNames[0]] = recTensor;
 
     const recResults = await rec.run(recFeed);
