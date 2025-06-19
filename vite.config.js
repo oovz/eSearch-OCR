@@ -10,5 +10,8 @@ export default defineConfig({
             formats: ['es', 'umd', 'iife'],
             fileName: (format) => `eSearchOCR.${format}.js`,
         },
+        rollupOptions: {
+            external: ["onnxruntime-common"]
+        }
     },
 });

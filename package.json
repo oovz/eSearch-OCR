@@ -2,22 +2,23 @@
     "name": "esearch-ocr",
     "version": "8.4.4",
     "description": "paddleocr models run on onnx",
-    "main": "./dist/esearch-ocr.umd.cjs",
-    "module": "./dist/esearch-ocr.js",
+    "main": "./dist/eSearchOCR.umd.js",
+    "module": "./dist/eSearchOCR.es.js",
     "exports": {
         ".": {
-            "import": "./dist/esearch-ocr.js",
-            "require": "./dist/esearch-ocr.umd.cjs"
+            "import": "./dist/eSearchOCR.es.js",
+            "require": "./dist/eSearchOCR.umd.js"
         }
     },
-    "homepage": "https://github.com/xushengfeng/eSearch-OCR",
+    "homepage": "https://github.com/oovz/eSearch-OCR",
     "type": "module",
     "types": "./src/main.ts",
     "scripts": {
-        "test": "vite ",
+        "test": "vite",
         "dev": "vite --host 0.0.0.0",
         "build": "vite build",
-        "preview": "vite preview"
+        "preview": "vite preview",
+        "prepare": "npm run build"
     },
     "files": [
         "src/",
