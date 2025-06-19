@@ -1,5 +1,5 @@
 {
-    "name": "esearch-ocr",
+    "name": "@oovz/esearch-ocr",
     "version": "8.4.4",
     "description": "paddleocr models run on onnx",
     "main": "./dist/eSearchOCR.umd.js",
@@ -31,10 +31,8 @@
         "paddleocr",
         "onnx"
     ],
-    "author": {
-        "name": "xsf",
-        "email": "xushengfeng_zg@163.com"
-    },
+    "author": "oovz",
+    "contributors": ["xsf <xushengfeng_zg@163.com>"],
     "license": "Apache-2.0",
     "dependencies": {
         "onnxruntime-common": "^1.22.0"
@@ -44,5 +42,15 @@
         "typescript": "^5.8.3",
         "vite": "^6.3.5"
     },
-    "packageManager": "yarn@4.9.2"
+    "packageManager": "yarn@4.9.2",
+    "directories": {
+        "test": "test"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/oovz/eSearch-OCR.git"
+    },
+    "bugs": {
+        "url": "https://github.com/oovz/eSearch-OCR/issues"
+    }
 }
